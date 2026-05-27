@@ -45,7 +45,7 @@ def search():
             "tenThuoc": item.get("tenThuoc") or "",
             "soGPLH": item.get("soDangKy") or "",
            "hoatChat": (item.get("hoatChatChinh") or item.get("hoatChat") or item.get("hoatChatHamLuong") or tt.get("hoatChatChinh") or tt.get("hoatChat") or ""),
-            "hamLuong": (tt.get("hamLuong") or item.get("hamLuong") or tt.get("hoatChatChinh") or item.get("hoatChatChinh") or item.get("tenHoatChat") or ""),
+            "hamLuong": (item.get("hamLuong") or tt.get("hamLuong") or ""),
             "dangBaoChe": tt.get("dangBaoChe") or item.get("dangBaoChe") or ""
         })
 
