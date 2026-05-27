@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify, send_from_directory
 import requests, os
 
 app = Flask(__name__, static_folder='static')
+app.config['JSON_AS_ASCII'] = False
 DAV = "https://dichvucong.dav.gov.vn/api/services/app/soDangKy/GetAllPublicServerPaging"
 
 @app.route("/")
