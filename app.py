@@ -44,8 +44,8 @@ def search():
         rows.append({
             "tenThuoc": item.get("tenThuoc") or "",
             "soGPLH": item.get("soDangKy") or "",
-            "hoatChat": tt.get("hoatChat") or item.get("hoatChat") or item.get("hoatChatDangKy") or "",
-            "hamLuong": tt.get("hamLuong") or item.get("hamLuong") or tt.get("hoatChatChinh") or item.get("hoatChatChinh") or "",
+           "hoatChat": (tt.get("hoatChat") or item.get("hoatChat") or item.get("hoatChatDangKy") or item.get("hoatChatHamLuong") or ""),
+            "hamLuong": (tt.get("hamLuong") or item.get("hamLuong") or tt.get("hoatChatChinh") or item.get("hoatChatChinh") or item.get("tenHoatChat") or ""),
             "dangBaoChe": tt.get("dangBaoChe") or item.get("dangBaoChe") or ""
         })
 
