@@ -98,6 +98,7 @@ function render(d){
       <th>Tên thuốc</th>
       <th>Hoạt chất</th>
       <th>Hàm lượng</th>
+      <th>Hàm lượng</th>
       <th>Dạng bào chế</th>
     </tr>`;
   d.rows.forEach((r,i)=>{
@@ -108,6 +109,7 @@ function render(d){
       <td>${r.tenThuoc||'—'}</td>
       <td>${r.hoatChat||'—'}</td>
       <td>${r.hamLuong||'—'}</td>
+      <td>${r.hamLuongNgan||'—'}</td>
       <td style="color:${layMau(r.dangBaoChe)};font-weight:500">${r.dangBaoChe||'—'}</td>
     </tr>`;
   });
