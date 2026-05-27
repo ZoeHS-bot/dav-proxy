@@ -10,7 +10,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .hdr{background:#fff;border-bottom:1px solid #e5e5e0;padding:14px 16px;position:sticky;top:0;z-index:10;}
 .hdr h1{font-size:17px;font-weight:600;}
 .hdr p{font-size:11px;color:#999;margin-top:2px;}
-.main{padding:14px 16px;max-width:900px;margin:0 auto;}
+.main{padding:14px 16px;max-width:1100px;margin:0 auto;}
 .row{display:flex;gap:8px;margin-bottom:10px;}
 input{flex:1;padding:11px 13px;border:1px solid #ddd;border-radius:10px;font-size:16px;outline:none;background:#fff;}
 input:focus{border-color:#555;}
@@ -31,6 +31,7 @@ td{padding:8px 12px;border-bottom:1px solid #f5f5f0;vertical-align:top;color:#1a
 tr:last-child td{border-bottom:none;}
 tr:hover td{background:#fafaf8;}
 td.sdk{font-family:monospace;font-size:12px;color:#555;}
+td.hl{font-weight:600;white-space:nowrap;}
 .err{padding:14px;background:#fff5f5;border-radius:10px;color:#c0392b;font-size:13px;border:1px solid #fcc;}
 .note{font-size:11px;color:#aaa;margin-top:12px;line-height:1.6;}
 </style>
@@ -59,6 +60,13 @@ td.sdk{font-family:monospace;font-size:12px;color:#555;}
   <p class="note">Nguồn: dichvucong.dav.gov.vn · Dữ liệu SĐK gốc theo quyết định cấp, chưa bao gồm đính chính/thu hồi.</p>
 </div>
 <script>
+const mauDBC = {};
+const mauList = ['#c0392b','#27ae60','#2980b9','#8e44ad','#e67e22','#16a085','#d35400','#2c3e50'];
+let mauIdx = 0;
+function layMau(dbc){
+  if(!mauDBC[dbc]){ mauDBC[dbc]=mauList[mauIdx%mauList.length]; mauIdx++; }
+  return mauDBC[dbc];
+}
 function fill(v){document.getElementById('inp').value=v;doSearch();}
 document.getElementById('inp').addEventListener('keydown',e=>{if(e.key==='Enter')doSearch();});
 
@@ -78,13 +86,6 @@ async function doSearch(){
 }
 
 function render(d){
-  const mauDBC = {};
-  const mauList = ['#c0392b','#27ae60','#2980b9','#8e44ad','#e67e22','#16a085','#d35400','#2c3e50'];
-  let mauIdx = 0;
-  function layMau(dbc){
-    if(!mauDBC[dbc]){ mauDBC[dbc] = mauList[mauIdx % mauList.length]; mauIdx++; }
-    return mauDBC[dbc];
-  }
   const res=document.getElementById('res');
   if(!d.rows||d.rows.length===0){
     res.innerHTML='<div class="err">Không tìm thấy kết quả.</div>';
@@ -101,13 +102,12 @@ function render(d){
       <th>Dạng bào chế</th>
     </tr>`;
   d.rows.forEach((r,i)=>{
-    const hoatChat = r.hoatChat || r.hamLuong || '—';
     html+=`<tr>
       <td>${i+1}</td>
       <td class="sdk">${r.soGPLH||'—'}</td>
       <td>${r.tenThuoc||'—'}</td>
       <td>${r.hoatChat||'—'}</td>
-      <td>${r.hamLuong||'—'}</td>
+      <td class="hl">${r.hamLuongNgan||'—'}</td>
       <td style="color:${layMau(r.dangBaoChe)};font-weight:500">${r.dangBaoChe||'—'}</td>
     </tr>`;
   });
