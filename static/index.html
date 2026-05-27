@@ -25,13 +25,17 @@ button:disabled{background:#999;}
 .spin{width:18px;height:18px;border:2px solid #ddd;border-top-color:#333;border-radius:50%;animation:sp .7s linear infinite;}
 @keyframes sp{to{transform:rotate(360deg);}}
 .tbl-wrap{overflow-x:auto;border-radius:12px;border:1px solid #e8e8e8;background:#fff;}
-table{width:100%;border-collapse:collapse;font-size:13px;}
+table{width:100%;border-collapse:collapse;font-size:13px;table-layout:fixed;}
 th{padding:9px 12px;text-align:left;background:#f9f9f7;color:#666;font-weight:500;font-size:11px;border-bottom:1px solid #eee;}
-td{padding:8px 12px;border-bottom:1px solid #f5f5f0;vertical-align:top;color:#1a1a1a;word-break:break-word;}
+td{padding:8px 12px;border-bottom:1px solid #f5f5f0;vertical-align:top;color:#1a1a1a;overflow-wrap:break-word;}
 tr:last-child td{border-bottom:none;}
 tr:hover td{background:#fafaf8;}
-td.sdk{font-family:monospace;font-size:12px;color:#555;}
-td.hl{font-weight:600;white-space:nowrap;width:80px;}
+.col-stt{width:36px;}
+.col-gplh{width:130px;}
+.col-ten{width:160px;}
+.col-hoat{width:auto;}
+.col-hl{width:80px;font-weight:600;}
+.col-dbc{width:130px;}
 .err{padding:14px;background:#fff5f5;border-radius:10px;color:#c0392b;font-size:13px;border:1px solid #fcc;}
 .note{font-size:11px;color:#aaa;margin-top:12px;line-height:1.6;}
 </style>
@@ -60,11 +64,11 @@ td.hl{font-weight:600;white-space:nowrap;width:80px;}
   <p class="note">Nguồn: dichvucong.dav.gov.vn · Dữ liệu SĐK gốc theo quyết định cấp, chưa bao gồm đính chính/thu hồi.</p>
 </div>
 <script>
-const mauDBC = {};
-const mauList = ['#c0392b','#27ae60','#2980b9','#8e44ad','#e67e22','#16a085','#d35400','#2c3e50'];
-let mauIdx = 0;
+const mauDBC={};
+const mauList=['#c0392b','#27ae60','#2980b9','#8e44ad','#e67e22','#16a085','#d35400','#2c3e50'];
+let mauIdx=0;
 function layMau(dbc){
-  if(!mauDBC[dbc]){ mauDBC[dbc]=mauList[mauIdx%mauList.length]; mauIdx++; }
+  if(!mauDBC[dbc]){mauDBC[dbc]=mauList[mauIdx%mauList.length];mauIdx++;}
   return mauDBC[dbc];
 }
 function fill(v){document.getElementById('inp').value=v;doSearch();}
@@ -93,6 +97,10 @@ function render(d){
   }
   let html=`<div class="sumcard">Tìm thấy <b>${d.total}</b> số đăng ký lưu hành tại Việt Nam (hiển thị ${d.rows.length})</div>
   <div class="tbl-wrap"><table>
+    <colgroup>
+      <col class="col-stt"><col class="col-gplh"><col class="col-ten">
+      <col class="col-hoat"><col class="col-hl"><col class="col-dbc">
+    </colgroup>
     <tr>
       <th>#</th>
       <th>Số GPLH</th>
@@ -104,10 +112,10 @@ function render(d){
   d.rows.forEach((r,i)=>{
     html+=`<tr>
       <td>${i+1}</td>
-      <td class="sdk">${r.soGPLH||'—'}</td>
+      <td style="font-family:monospace;font-size:12px;color:#555">${r.soGPLH||'—'}</td>
       <td>${r.tenThuoc||'—'}</td>
       <td>${r.hoatChat||'—'}</td>
-      <td class="hl">${r.hamLuongNgan||'—'}</td>
+      <td class="col-hl">${r.hamLuongNgan||'—'}</td>
       <td style="color:${layMau(r.dangBaoChe)};font-weight:500">${r.dangBaoChe||'—'}</td>
     </tr>`;
   });
