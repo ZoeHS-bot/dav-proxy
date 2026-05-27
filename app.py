@@ -1,8 +1,8 @@
-from flask import Flask, request, jsonify, send_from_directory
+from flask import Flask, request, send_from_directory
+from collections import defaultdict
 import requests, os, json
 
 app = Flask(__name__, static_folder='static')
-
 DAV = "https://dichvucong.dav.gov.vn/api/services/app/soDangKy/GetAllPublicServerPaging"
 
 @app.route("/")
@@ -13,7 +13,10 @@ def index():
 def search():
     kw = request.json.get("keyword", "").strip()
     if not kw:
-        return jsonify({"error": "Thiếu từ khóa"}), 400
+        return app.response_class(
+            response=json.dumps({"error": "Thieu tu khoa"}, ensure_ascii=False),
+            mimetype='application/json'
+        ), 400
     try:
         r = requests.post(DAV, json={
             "filterText": kw, "KichHoat": True,
@@ -28,36 +31,41 @@ def search():
         r.raise_for_status()
         data = r.json()
     except Exception as e:
-        return jsonify({"error": str(e)}), 502
+        return app.response_class(
+            response=json.dumps({"error": str(e)}, ensure_ascii=False),
+            mimetype='application/json'
+        ), 502
 
     items = data.get("result", {}).get("items", [])
     total = data.get("result", {}).get("totalCount", 0)
 
-    if items:
-        print("SAMPLE:", json.dumps(items[0], ensure_ascii=False))
-
     if not items:
-        return jsonify({"hoatChat": kw, "tongSoDangKy": 0, "nhom": []})
+        return app.response_class(
+            response=json.dumps({"hoatChat": kw, "tongSoDangKy": 0, "nhom": []}, ensure_ascii=False),
+            mimetype='application/json'
+        )
 
-    from collections import defaultdict
     groups = defaultdict(lambda: defaultdict(list))
     hoat_chat = kw
     for item in items:
-       if item.get("hoatChatHamLuong"):
-            hoat_chat = item["hoatChatHamLuong"].strip()
-        dbc = (item.get("dangBaoChe") or "Không xác định").strip()
-        hl  = (item.get("hamLuong") or "Không xác định").strip()
+        ten_hoat_chat = item.get("hoatChatHamLuong") or ""
+        if ten_hoat_chat:
+            hoat_chat = ten_hoat_chat.strip()
+        dbc = (item.get("dangBaoChe") or "Khong xac dinh").strip()
+        hl = (item.get("hamLuong") or "Khong xac dinh").strip()
         sdk = (item.get("soDangKyCu") or "").strip()
         groups[dbc][hl].append(sdk)
 
     nhom = []
     for dbc in sorted(groups):
-        hl_list = [{"hamLuong": hl, "soSDK": len(sdks), "sdk": sdks[:3]}
-                   for hl, sdks in sorted(groups[dbc].items())]
+        hl_list = []
+        for hl, sdks in sorted(groups[dbc].items()):
+            hl_list.append({"hamLuong": hl, "soSDK": len(sdks), "sdk": sdks[:3]})
         nhom.append({"daBaoChe": dbc, "hamLuongs": hl_list})
 
+    result = {"hoatChat": hoat_chat, "tongSoDangKy": total, "nhom": nhom}
     return app.response_class(
-        response=json.dumps({"hoatChat": hoat_chat, "tongSoDangKy": total, "nhom": nhom}, ensure_ascii=False),
+        response=json.dumps(result, ensure_ascii=False),
         mimetype='application/json'
     )
 
