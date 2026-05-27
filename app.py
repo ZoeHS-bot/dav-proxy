@@ -43,11 +43,11 @@ def search():
     groups = defaultdict(lambda: defaultdict(list))
     hoat_chat = kw
     for item in items:
-        if item.get("hoatChat"):
-            hoat_chat = item["hoatChat"].strip()
-        dbc = (item.get("daBaoChe") or "Không xác định").strip()
+       if item.get("hoatChatHamLuong"):
+            hoat_chat = item["hoatChatHamLuong"].strip()
+        dbc = (item.get("dangBaoChe") or "Không xác định").strip()
         hl  = (item.get("hamLuong") or "Không xác định").strip()
-        sdk = (item.get("soDangKy") or "").strip()
+        sdk = (item.get("soDangKyCu") or "").strip()
         groups[dbc][hl].append(sdk)
 
     nhom = []
