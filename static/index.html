@@ -93,7 +93,31 @@ function render(d){
     res.innerHTML='<div class="err">Không tìm thấy kết quả.</div>';
     return;
   }
-  let html=`<div class="sumcard">Tìm thấy <b>${d.total}</b> số đăng ký lưu hành tại Việt Nam</div>`;
+  // Thống kê theo dạng bào chế
+  const stats={};
+  d.rows.forEach(r=>{
+    const dbc=r.dangBaoChe||'Không xác định';
+    const hl=r.hamLuongNgan||'—';
+    if(!stats[dbc]) stats[dbc]={count:0,hls:{}};
+    stats[dbc].count++;
+    stats[dbc].hls[hl]=(stats[dbc].hls[hl]||0)+1;
+  });
+  let statsHtml='';
+  Object.entries(stats).sort((a,b)=>b[1].count-a[1].count).forEach(([dbc,v])=>{
+    const mau=layMau(dbc);
+    const hlList=Object.entries(v.hls).sort((a,b)=>b[1]-a[1]).map(([hl,c])=>`${hl} (${c})`).join(', ');
+    statsHtml+=`<div style="padding:6px 0;border-bottom:0.5px solid #f0f0ee;font-size:13px;">
+      <span style="color:${mau};font-weight:600">${dbc}</span>
+      <span style="color:#888;margin:0 6px">·</span>
+      <span style="font-weight:600">${v.count} SĐK</span>
+      <span style="color:#888;margin:0 6px">·</span>
+      <span style="color:#555">${hlList}</span>
+    </div>`;
+  });
+  let html=`<div class="sumcard">
+    <div style="margin-bottom:10px">Tìm thấy <b>${d.total}</b> số đăng ký lưu hành tại Việt Nam</div>
+    ${statsHtml}
+  </div>`;
   d.rows.forEach((r,i)=>{
     const mau=layMau(r.dangBaoChe);
     html+=`<div class="card">
