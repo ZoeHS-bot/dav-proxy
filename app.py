@@ -39,6 +39,7 @@ def search():
     groups = defaultdict(lambda: defaultdict(list))
     hoat_chat = kw
     for item in items:
+         if items: print("SAMPLE:", items[0])
         if item.get("hoatChat"): hoat_chat = item["hoatChat"].strip()
         dbc = (item.get("daBaoChe") or "Không xác định").strip()
         hl  = (item.get("hamLuong") or "Không xác định").strip()
