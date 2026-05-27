@@ -103,7 +103,7 @@ function render(d){
     stats[dbc].hls[hl]=(stats[dbc].hls[hl]||0)+1;
   });
   let statsHtml='';
-  Object.entries(stats).sort((a,b)=>b[1].count-a[1].count).forEach(([dbc,v])=>{
+  Object.entries(stats).sort((a,b)=>a[0].localeCompare(b[0],'vi')).forEach(([dbc,v])=>{
     const mau=layMau(dbc);
     const hlList=Object.entries(v.hls).sort((a,b)=>b[1]-a[1]).map(([hl,c])=>`${hl} (${c})`).join(', ');
     statsHtml+=`<div style="padding:6px 0;border-bottom:0.5px solid #f0f0ee;font-size:13px;">
