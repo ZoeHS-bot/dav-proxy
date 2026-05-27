@@ -52,8 +52,8 @@ def search():
         if ten_hoat_chat:
             hoat_chat = ten_hoat_chat.strip()
         dbc = (item.get("dangBaoChe") or "Khong xac dinh").strip()
-        hl = (item.get("hamLuong") or item.get("hamLuongText") or "Khong xac dinh").strip()
-        sdk = (item.get("soGPLH") or item.get("soDangKyCu") or "").strip()
+        hl = (item.get("hamLuong") or item.get("hoatChatChinh") or "Khong xac dinh").strip()
+        sdk = (item.get("soDangKy") or "").strip()
         groups[dbc][hl].append(sdk)
 
     nhom = []
