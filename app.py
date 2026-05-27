@@ -1,8 +1,8 @@
 from flask import Flask, request, jsonify, send_from_directory
-import requests, os
+import requests, os, json
 
 app = Flask(__name__, static_folder='static')
-app.config['JSON_AS_ASCII'] = False
+
 DAV = "https://dichvucong.dav.gov.vn/api/services/app/soDangKy/GetAllPublicServerPaging"
 
 @app.route("/")
@@ -32,6 +32,10 @@ def search():
 
     items = data.get("result", {}).get("items", [])
     total = data.get("result", {}).get("totalCount", 0)
+
+    if items:
+        print("SAMPLE:", json.dumps(items[0], ensure_ascii=False))
+
     if not items:
         return jsonify({"hoatChat": kw, "tongSoDangKy": 0, "nhom": []})
 
@@ -39,8 +43,8 @@ def search():
     groups = defaultdict(lambda: defaultdict(list))
     hoat_chat = kw
     for item in items:
-         if items: print("SAMPLE:", items[0])
-        if item.get("hoatChat"): hoat_chat = item["hoatChat"].strip()
+        if item.get("hoatChat"):
+            hoat_chat = item["hoatChat"].strip()
         dbc = (item.get("daBaoChe") or "Không xác định").strip()
         hl  = (item.get("hamLuong") or "Không xác định").strip()
         sdk = (item.get("soDangKy") or "").strip()
@@ -52,7 +56,10 @@ def search():
                    for hl, sdks in sorted(groups[dbc].items())]
         nhom.append({"daBaoChe": dbc, "hamLuongs": hl_list})
 
-    return jsonify({"hoatChat": hoat_chat, "tongSoDangKy": total, "nhom": nhom})
+    return app.response_class(
+        response=json.dumps({"hoatChat": hoat_chat, "tongSoDangKy": total, "nhom": nhom}, ensure_ascii=False),
+        mimetype='application/json'
+    )
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
