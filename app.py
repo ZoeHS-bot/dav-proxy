@@ -1,5 +1,4 @@
 from flask import Flask, request, send_from_directory
-from collections import defaultdict
 import requests, os, json
 
 app = Flask(__name__, static_folder='static')
@@ -39,31 +38,17 @@ def search():
     items = data.get("result", {}).get("items", [])
     total = data.get("result", {}).get("totalCount", 0)
 
-    if not items:
-        return app.response_class(
-            response=json.dumps({"hoatChat": kw, "tongSoDangKy": 0, "nhom": []}, ensure_ascii=False),
-            mimetype='application/json'
-        )
-
-    groups = defaultdict(lambda: defaultdict(list))
-    hoat_chat = kw
+    rows = []
     for item in items:
-        ten_hoat_chat = item.get("hoatChatHamLuong") or ""
-        if ten_hoat_chat:
-            hoat_chat = ten_hoat_chat.strip()
-        dbc = (item.get("dangBaoChe") or "Khong xac dinh").strip()
-        hl = (item.get("hamLuong") or item.get("hoatChatChinh") or "Khong xac dinh").strip()
-        sdk = (item.get("soDangKy") or "").strip()
-        groups[dbc][hl].append(sdk)
+        rows.append({
+            "tenThuoc": item.get("tenThuoc") or "",
+            "soGPLH": item.get("soDangKy") or "",
+            "hoatChat": item.get("hoatChatChinh") or item.get("hoatChatHamLuong") or "",
+            "hamLuong": item.get("hamLuong") or "",
+            "dangBaoChe": item.get("dangBaoChe") or ""
+        })
 
-    nhom = []
-    for dbc in sorted(groups):
-        hl_list = []
-        for hl, sdks in sorted(groups[dbc].items()):
-            hl_list.append({"hamLuong": hl, "soSDK": len(sdks), "sdk": sdks[:3]})
-        nhom.append({"daBaoChe": dbc, "hamLuongs": hl_list})
-
-    result = {"hoatChat": hoat_chat, "tongSoDangKy": total, "nhom": nhom}
+    result = {"total": total, "rows": rows}
     return app.response_class(
         response=json.dumps(result, ensure_ascii=False),
         mimetype='application/json'
