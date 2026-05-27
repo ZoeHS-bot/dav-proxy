@@ -1,9 +1,13 @@
 from flask import Flask, request, send_from_directory
-import requests, os, json
+import requests, os, json, re
 
 app = Flask(__name__, static_folder='static')
 DAV = "https://dichvucong.dav.gov.vn/api/services/app/soDangKy/GetAllPublicServerPaging"
 
+def trich_ham_luong(text):
+    if not text: return ""
+    m = re.search(r'(\d+[\.,]?\d*\s*(?:mg|mcg|g|IU|%))', text, re.IGNORECASE)
+    return m.group(1).strip() if m else ""
 @app.route("/")
 def index():
     return send_from_directory('static', 'index.html')
@@ -41,12 +45,13 @@ def search():
     rows = []
     for item in items:
         tt = item.get("thongTinThuocCoBan") or {}
-        rows.append({
+       rows.append({
             "tenThuoc": item.get("tenThuoc") or "",
             "soGPLH": item.get("soDangKy") or "",
-           "hoatChat": (item.get("hoatChatChinh") or item.get("hoatChat") or item.get("hoatChatHamLuong") or tt.get("hoatChatChinh") or tt.get("hoatChat") or ""),
+            "hoatChat": (item.get("hoatChatChinh") or item.get("hoatChat") or item.get("hoatChatHamLuong") or tt.get("hoatChatChinh") or tt.get("hoatChat") or ""),
             "hamLuong": (item.get("hamLuong") or tt.get("hamLuong") or ""),
-            "dangBaoChe": tt.get("dangBaoChe") or item.get("dangBaoChe") or ""
+            "hamLuongNgan": (item.get("hamLuong") or trich_ham_luong(item.get("hoatChatChinh") or "")),
+            "dangBaoChe": (tt.get("dangBaoChe") or item.get("dangBaoChe") or "")
         })
 
     result = {"total": total, "rows": rows}
