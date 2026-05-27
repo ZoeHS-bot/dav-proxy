@@ -40,12 +40,13 @@ def search():
 
     rows = []
     for item in items:
+        tt = item.get("thongTinThuocCoBan") or {}
         rows.append({
             "tenThuoc": item.get("tenThuoc") or "",
             "soGPLH": item.get("soDangKy") or "",
-            "hoatChat": item.get("hoatChatChinh") or item.get("hoatChatHamLuong") or "",
-            "hamLuong": item.get("hamLuong") or "",
-            "dangBaoChe": item.get("dangBaoChe") or ""
+            "hoatChat": tt.get("hoatChatChinh") or item.get("hoatChatChinh") or item.get("hoatChatHamLuong") or "",
+            "hamLuong": tt.get("hamLuong") or item.get("hamLuong") or "",
+            "dangBaoChe": tt.get("dangBaoChe") or item.get("dangBaoChe") or ""
         })
 
     result = {"total": total, "rows": rows}
