@@ -78,6 +78,13 @@ async function doSearch(){
 }
 
 function render(d){
+  const mauDBC = {};
+  const mauList = ['#c0392b','#27ae60','#2980b9','#8e44ad','#e67e22','#16a085','#d35400','#2c3e50'];
+  let mauIdx = 0;
+  function layMau(dbc){
+    if(!mauDBC[dbc]){ mauDBC[dbc] = mauList[mauIdx % mauList.length]; mauIdx++; }
+    return mauDBC[dbc];
+  }
   const res=document.getElementById('res');
   if(!d.rows||d.rows.length===0){
     res.innerHTML='<div class="err">Không tìm thấy kết quả.</div>';
@@ -99,7 +106,7 @@ function render(d){
       <td class="sdk">${r.soGPLH||'—'}</td>
       <td>${r.tenThuoc||'—'}</td>
       <td>${hoatChat}</td>
-      <td>${r.dangBaoChe||'—'}</td>
+      <td style="color:${layMau(r.dangBaoChe)};font-weight:500">${r.dangBaoChe||'—'}</td>
     </tr>`;
   });
   html+='</table></div>';
