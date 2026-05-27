@@ -5,9 +5,11 @@ app = Flask(__name__, static_folder='static')
 DAV = "https://dichvucong.dav.gov.vn/api/services/app/soDangKy/GetAllPublicServerPaging"
 
 def trich_ham_luong(text):
-    if not text: return ""
+    if not text:
+        return ""
     m = re.search(r'(\d+[\.,]?\d*\s*(?:mg|mcg|g|IU|%))', text, re.IGNORECASE)
     return m.group(1).strip() if m else ""
+
 @app.route("/")
 def index():
     return send_from_directory('static', 'index.html')
@@ -45,12 +47,15 @@ def search():
     rows = []
     for item in items:
         tt = item.get("thongTinThuocCoBan") or {}
-       rows.append({
+        hoat_chat = (item.get("hoatChatChinh") or item.get("hoatChat") or item.get("hoatChatHamLuong") or tt.get("hoatChatChinh") or tt.get("hoatChat") or "")
+        ham_luong = (item.get("hamLuong") or tt.get("hamLuong") or "")
+        ham_luong_ngan = ham_luong or trich_ham_luong(hoat_chat)
+        rows.append({
             "tenThuoc": item.get("tenThuoc") or "",
             "soGPLH": item.get("soDangKy") or "",
-            "hoatChat": (item.get("hoatChatChinh") or item.get("hoatChat") or item.get("hoatChatHamLuong") or tt.get("hoatChatChinh") or tt.get("hoatChat") or ""),
-            "hamLuong": (item.get("hamLuong") or tt.get("hamLuong") or ""),
-            "hamLuongNgan": (item.get("hamLuong") or trich_ham_luong(item.get("hoatChatChinh") or "")),
+            "hoatChat": hoat_chat,
+            "hamLuong": ham_luong,
+            "hamLuongNgan": ham_luong_ngan,
             "dangBaoChe": (tt.get("dangBaoChe") or item.get("dangBaoChe") or "")
         })
 
